@@ -217,7 +217,7 @@ class SwingyMonkey:
 
         # Render the display.
         pg.display.update()
-
+        print(self.get_state())
         # If failed, play sound and exit.  Also, assign rewards.
         if edge_hit:
             if self.sound:

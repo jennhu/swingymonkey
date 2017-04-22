@@ -33,7 +33,7 @@ class Learner(object):
 
         new_action = npr.rand() < 0.1
         new_state  = state
-
+        print(state)
         self.last_action = new_action
         self.last_state  = new_state
 
