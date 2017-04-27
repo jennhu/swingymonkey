@@ -1,17 +1,20 @@
 # Imports.
 import numpy as np
 import numpy.random as npr
+import gc #???
+import matplotlib.pyplot as plt
 
 from SwingyMonkey import SwingyMonkey
 
 
 class Learner(object):
-    def __init__(self):
+    def __init__(self, a, b):
         self.last_state  = None
         self.last_action = None
         self.last_reward = None
         self.eps = 0.01
-        self.eta = 0.5
+        self.eta = a
+        self.xi = b
         self.gamma = 0.9
         self.grav_ind = None
         self.n_dist_bins = 3
@@ -50,7 +53,7 @@ class Learner(object):
         # Determine gravity
         if self.last_action == 0:
             self.grav_ind = self.last_state['monkey']['vel'] - state['monkey']['vel'] - 1
-            print(self.grav_ind)
+            # print(self.grav_ind)
 
         # You might do some learning here based on the current state and the last state.
 
@@ -89,8 +92,8 @@ class Learner(object):
         # Q = np.dot(self.w, self.Phi(self.last_state, self.last_action))
         prev = self.w[self.grav_ind, last_dist_ind, last_mtop_ind, last_ttop_ind, last_vel_ind, self.last_action]
         grad = prev - (self.last_reward + self.gamma * max(self.w[self.grav_ind, dist_ind, mtop_ind, ttop_ind, vel_ind, :]))
-        print(prev, grad)
-        self.w[self.grav_ind, last_dist_ind, last_mtop_ind, last_ttop_ind, last_vel_ind, self.last_action] = prev - self.eta * np.exp(self.niters / -1000) * grad
+        # print(prev, grad)
+        self.w[self.grav_ind, last_dist_ind, last_mtop_ind, last_ttop_ind, last_vel_ind, self.last_action] = prev - self.eta * np.exp(self.niters / -self.xi) * grad
 
         new_state  = state
         
@@ -131,16 +134,32 @@ def run_games(learner, hist, iters = 100, t_len = 100):
 
 if __name__ == '__main__':
 
-	# Select agent.
-	agent = Learner()
+    gc.collect() #???
+    # Select agent.
 
-	# Empty list to save history.
-	hist = []
+    etas = [1]
+    xis = [1,10,100,1000,10000]
 
-	# Run games. 
-	run_games(agent, hist, 2000, 10)
+    for eta in etas:
+        for xi in xis:
+            agent = Learner(eta, xi)
 
-	# Save history. 
-	np.save('hist',np.array(hist))
+            assert(np.count_nonzero(agent.w) == 0)
 
+            # Empty list to save history.
+            hist = []
+            # Run games.
+            nepochs = 100
+            run_games(agent, hist, nepochs, 0)
+            print(eta, xi, np.average(hist), np.std(hist))
 
+            # Save history.
+            # np.save('hist',np.array(hist))
+
+            # Plot histogram
+            # plt.hist(hist)
+            # plt.title("Performance with "+str(nepochs)+" epochs")
+            # plt.xlabel("Score")
+            # output_file = '.png'
+            # plt.savefig(output_file)
+            # plt.show()
