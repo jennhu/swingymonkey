@@ -118,27 +118,27 @@ if __name__ == '__main__':
     # Empty list to save history.
     hist = []
     # Run games.
-    nepochs = 100
+    nepochs = 200
     run_games(agent, hist, nepochs, 0)
 
     # print(np.average(hist), np.std(hist))
     # def movingaverage(interval, window_size):
     # 	window= np.ones(int(window_size))/float(window_size)
     # 	return np.convolve(interval, window, 'same')
-    # x = range(1,101)
+    # x = range(1,201)
     # y = hist
     # plot(x,y,"k.")
     # y_av = movingaverage(y, 10)
     # plot(x, y_av,"r")
-    # xlim(0,100)
+    # xlim(0,200)
     # xlabel("Epoch")
     # ylabel("Score")
     # grid(True)
     # show()
-    # plt.savefig('movingavg.png')
+    # plt.savefig('movingav.png')
 
     # Save history.
-    np.save('hist',np.array(hist))
+    # np.save('hist',np.array(hist))
 
     # Plot histogram
     # plt.hist(hist)
